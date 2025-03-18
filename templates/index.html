@@ -5,16 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gemini Chatbot</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <!-- Highlight.js for code syntax highlighting -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
 </head>
 <body>
     <div class="chat-container">
         <h2>Gemini Chatbot</h2>
         <div id="chat-box"></div>
-        <input type="text" id="user-input" placeholder="Type a message...">
+        <input type="text" id="user-input" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
         <button onclick="sendMessage()">Send</button>
     </div>
 
@@ -24,7 +20,7 @@
             if (!userInput) return;
 
             let chatBox = document.getElementById("chat-box");
-            chatBox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
+            chatBox.innerHTML += "<p><strong>You:</strong> " + userInput + "</p>";
 
             fetch("/chat", {
                 method: "POST",
@@ -33,42 +29,17 @@
             })
             .then(response => response.json())
             .then(data => {
-                let responseText = data.response;
-
-                // Format code blocks
-                responseText = responseText.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="$1">$2</code></pre>');
-
-                // Replace line breaks with <br> tags for better readability
-                responseText = responseText.replace(/\n/g, '<br>');
-
-                // Replace **text** with <strong>text</strong> for bold formatting
-                responseText = responseText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-
-                // Replace * with <li> for bullet points
-                responseText = responseText.replace(/\*\s(.*?)(<br>|$)/g, '<li>$1</li>');
-
-                // Wrap bullet points in <ul> tags
-                responseText = responseText.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
-
-                chatBox.innerHTML += `<p><strong>Gemini:</strong> ${responseText}</p>`;
-
-                // Re-run syntax highlighting for new code blocks
-                document.querySelectorAll('pre code').forEach((block) => {
-                    hljs.highlightBlock(block);
-                });
-
-                chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the bottom
+                chatBox.innerHTML += "<p><strong>Gemini:</strong> " + data.response + "</p>";
             });
 
             document.getElementById("user-input").value = "";
         }
 
-        // Allow sending message with Enter key
-        document.getElementById("user-input").addEventListener("keypress", function(event) {
+        function handleKeyPress(event) {
             if (event.key === "Enter") {
                 sendMessage();
             }
-        });
+        }
     </script>
 </body>
 </html>
