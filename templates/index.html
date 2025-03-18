@@ -34,15 +34,29 @@
             .then(response => response.json())
             .then(data => {
                 let responseText = data.response;
+
                 // Format code blocks
-                if (responseText.includes("```")) {
-                    responseText = responseText.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="$1">$2</code></pre>');
-                }
+                responseText = responseText.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="$1">$2</code></pre>');
+
+                // Replace line breaks with <br> tags for better readability
+                responseText = responseText.replace(/\n/g, '<br>');
+
+                // Replace **text** with <strong>text</strong> for bold formatting
+                responseText = responseText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+                // Replace * with <li> for bullet points
+                responseText = responseText.replace(/\*\s(.*?)(<br>|$)/g, '<li>$1</li>');
+
+                // Wrap bullet points in <ul> tags
+                responseText = responseText.replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
+
                 chatBox.innerHTML += `<p><strong>Gemini:</strong> ${responseText}</p>`;
+
                 // Re-run syntax highlighting for new code blocks
                 document.querySelectorAll('pre code').forEach((block) => {
                     hljs.highlightBlock(block);
                 });
+
                 chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the bottom
             });
 
