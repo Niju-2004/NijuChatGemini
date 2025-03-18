@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gemini Chatbot</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Highlight.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </head>
 <body>
     <div class="chat-container">
@@ -20,7 +24,7 @@
             if (!userInput) return;
 
             let chatBox = document.getElementById("chat-box");
-            chatBox.innerHTML += "<p><strong>You:</strong> " + userInput + "</p>";
+            chatBox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
 
             fetch("/chat", {
                 method: "POST",
@@ -30,11 +34,15 @@
             .then(response => response.json())
             .then(data => {
                 let responseText = data.response;
-                if (responseText.startsWith("```")) {
-                    // Format code blocks
-                    responseText = "<pre><code>" + responseText.replace(/```/g, "") + "</code></pre>";
+                // Format code blocks
+                if (responseText.includes("```")) {
+                    responseText = responseText.replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code class="$1">$2</code></pre>');
                 }
-                chatBox.innerHTML += "<p><strong>Gemini:</strong> " + responseText + "</p>";
+                chatBox.innerHTML += `<p><strong>Gemini:</strong> ${responseText}</p>`;
+                // Re-run syntax highlighting for new code blocks
+                document.querySelectorAll('pre code').forEach((block) => {
+                    hljs.highlightBlock(block);
+                });
                 chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the bottom
             });
 
