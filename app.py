@@ -7,7 +7,7 @@ import socket
 
 # Load environment variables
 load_dotenv()
-GEMINI_API = os.getenv("GEMINI_API")  # Ensure this matches the key in Render's environment variables
+GEMINI_API = os.getenv("GEM_KEY")  # Ensure this matches the key in Render's environment variables
 if not GEMINI_API:
     raise ValueError("Please set the GEMINI_API environment variable in your .env file or Render dashboard.")
 
