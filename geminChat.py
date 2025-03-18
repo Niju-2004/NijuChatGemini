@@ -2,18 +2,14 @@ import os
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
 
-# Retrieve API key
+load_dotenv()
 GEMINI_API = os.getenv("GEM_KEY", "").strip()
 if not GEMINI_API:
     raise ValueError("API Key is missing! Set GEMINI_API in your .env file.")
 
-# Configure the Gemini API
 genai.configure(api_key=GEMINI_API)
 
-# Define the model with configuration
 generation_config = {
     "temperature": 0.7,
     "top_p": 1,
@@ -27,7 +23,6 @@ model = genai.GenerativeModel(
 )
 
 def chat_with_gemini(user_query):
-    """Generate a response from Gemini AI based on user input."""
     try:
         response = model.generate_content(user_query)
         return response.text if response and hasattr(response, "text") else "No valid response from Gemini."
